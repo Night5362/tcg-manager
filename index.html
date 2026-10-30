@@ -4,14 +4,6 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>TCG 戰績紀錄</title>
-<meta name="description" content="記錄 TCG 賽事勝敗、牌組與統計">
-<link rel="manifest" href="./manifest.webmanifest">
-<meta name="theme-color" content="#4f46e5">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="TCG戰績">
-<link rel="icon" href="./icons/icon-192.png" type="image/png">
-<link rel="apple-touch-icon" href="./icons/icon-180.png">
 <style>
 :root{--bg:#f6f7fb;--card:#fff;--tx:#1b1f2a;--mu:#6b7385;--bd:#e3e6ee;--ac:#4f46e5;--w:#16a34a;--l:#dc2626;--d:#d97706;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12141b;--card:#1c1f2a;--tx:#eceef5;--mu:#98a0b5;--bd:#2d3243;--ac:#818cf8;--w:#4ade80;--l:#f87171;--d:#fbbf24;color-scheme:dark}}
@@ -182,7 +174,146 @@ function render(){
   document.getElementById('app').innerHTML=({add:vAdd,log:vLog,stats:vStats,set:vSet})[tab]();
   document.getElementById('nav').innerHTML=[['add','＋ 記錄'],['log','列表'],['stats','統計'],['set','備份']].map(function(x){return '<button class="'+(tab===x[0]?'on':'')+'" onclick="tab=\''+x[0]+'\';render();scrollTo(0,0)">'+x[1]+'</button>'}).join('')}
 render();
-if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('./sw.js').catch(function(){})})}
+</script>
+<script>
+var EVK='tcg_events_v1',EV=ld(EVK,{}),TM=0,flt={q:'',from:'',to:'',deck:''},rng={from:'',to:''},mdeck='',LF=[20,20],LS=20,SC;
+function ld(k,d){try{var s=localStorage.getItem(k);return s?JSON.parse(s):d}catch(e){return d}}
+function sv(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+(function(){var s=document.createElement('style');s.textContent='.toast{position:fixed;left:12px;right:12px;bottom:calc(64px + env(safe-area-inset-bottom,0px));max-width:616px;margin:0 auto;background:#1b1f2a;color:#fff;padding:12px 14px;border-radius:12px;display:flex;justify-content:space-between;align-items:center;z-index:20}.toast button{background:none;border:0;color:#a5b4fc;font-weight:600;font-size:14px;cursor:pointer}.ov{position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:30;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:16px}.ov img{max-width:100%;max-height:62vh;border-radius:12px}.ov .btn{max-width:360px;margin-top:0}.lf{font-size:44px;font-weight:700;text-align:center}.sm{padding:8px 0!important;font-size:13px}.row input{min-width:0}';document.head.appendChild(s)})();
+function toast(m,a,fn){var t=document.getElementById('toast');if(!t){t=document.createElement('div');t.id='toast';t.className='toast';document.body.appendChild(t)}t.style.display='flex';t.innerHTML='<span>'+m+'</span>'+(a?'<button onclick="TFN()">'+a+'</button>':'');window.TFN=function(){t.style.display='none';if(fn)fn()};clearTimeout(TM);TM=setTimeout(function(){t.style.display='none'},6000)}
+function n3(o){return o.w+o.l+o.d}
+function inR(r,f,t){return(!f||r.date>=f)&&(!t||r.date<=t)}
+function ymd(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+function G3(){return form.gt||(form.gt=['','',''])}
+function syncForm(){['date','event','me','opp','note','gamec','round','nick'].forEach(function(k){var e=document.getElementById('f_'+k);if(e)form[k]=e.value})}
+function setGT(i,v){syncForm();G3()[i]=v;render()}
+function segGT(i){var v=G3()[i];return '<div class="seg" style="margin-top:6px">'+[['先','先攻'],['後','後攻']].map(function(x){return '<button type="button" class="sm '+(v===x[0]?'on':'')+'" onclick="setGT('+i+',\''+x[0]+'\')">'+x[1]+'</button>'}).join('')+'</div>'}
+function resHtml(){
+  if(form.fmt!=='BO3')return '<label>結果</label>'+seg('res',[['W','勝'],['L','敗'],['D','和']],form.res,{W:'w',L:'l',D:'d'})+'<label>先後攻（必填）</label>'+seg('turn',[['先','先攻'],['後','後攻']],form.turn);
+  var c=calcBo3(form.games),h='';
+  for(var i=0;i<(c.g3?3:2);i++)h+='<label>Game '+(i+1)+'</label>'+segG(i)+segGT(i);
+  return h+'<div style="margin-top:12px;padding:10px;border-radius:10px;background:var(--bg);text-align:center">整場結果　'+(c.res?'<span class="badge b-'+c.res.toLowerCase()+'">'+RL[c.res]+'</span> <b>'+c.score+'</b>':'<span class="mu">請依序填寫各局勝敗</span>')+'</div>'}
+function vAdd(){return '<h1>'+(form.editId?'編輯戰績':'新增戰績')+'</h1><div class="card">'+
+  '<label>TCG 分類</label>'+gameSelHtml()+'<label>日期</label><input id="f_date" type="date" value="'+form.date+'">'+
+  '<label>賽事名稱</label><input id="f_event" list="dl_e" value="'+esc(form.event)+'" placeholder="例：店賽 10月場">'+
+  '<label>輪次（選填）</label><input id="f_round" inputmode="numeric" value="'+esc(form.round||'')+'" placeholder="例：1">'+
+  '<label>賽制</label>'+seg('fmt',[['BO1','BO1'],['BO3','BO3']],form.fmt)+
+  '<label>我的牌組</label><input id="f_me" list="dl_d" value="'+esc(form.me)+'" placeholder="牌組名稱">'+
+  '<label>對手牌組</label><input id="f_opp" list="dl_d" value="'+esc(form.opp)+'" placeholder="對手牌組名稱">'+
+  '<label>對手暱稱（選填）</label><input id="f_nick" list="dl_n" value="'+esc(form.nick||'')+'" placeholder="例：小明">'+
+  resHtml()+'<label>備註（選填）</label><textarea id="f_note" rows="2" placeholder="例：關鍵失誤、對手特殊打法">'+esc(form.note)+'</textarea>'+
+  opts('dl_e',uniq('event'))+opts('dl_d',deckList())+opts('dl_n',uniq('nk'))+
+  '<button class="btn" onclick="add()">'+(form.editId?'更新戰績':'儲存戰績')+'</button>'+(form.editId?'<button class="btn sec" onclick="cancelEdit()">取消編輯</button>':'<button class="btn sec" onclick="add(1)">儲存並再記一場</button>')+'</div>'}
+function add(stay){syncForm();
+  var g=form.game==='__c'?form.gamec.trim():form.game;
+  if(!g){alert('請選擇 TCG 分類');return}
+  if(!form.event.trim()||!form.me.trim()||!form.opp.trim()){alert('請填寫賽事名稱、我的牌組與對手牌組');return}
+  var rs=form.res,sc='',gm,gt,tn=form.turn;
+  if(form.fmt==='BO3'){var c=calcBo3(form.games);if(!c.res){alert('請填寫各局勝敗（Game 1、Game 2，必要時 Game 3）');return}rs=c.res;sc=c.score;var n=c.g3?3:2;gm=form.games.slice(0,n);gt=G3().slice(0,n);if(gt.some(function(t){return!t})){alert('請選擇每一局的先後攻');return}tn=gt[0]}else if(!tn){alert('請選擇先後攻');return}
+  var r={id:form.editId||Date.now(),game:g,date:form.date,event:form.event.trim(),rd:(form.round||'').trim(),fmt:form.fmt,me:form.me.trim(),opp:form.opp.trim(),nk:(form.nick||'').trim(),res:rs,score:sc,games:gm,gt:gt,turn:tn,note:form.note.trim()};
+  if(form.editId){recs=recs.map(function(x){return x.id===form.editId?r:x});form.round=''}else{recs.push(r);if(r.rd&&!isNaN(+r.rd))form.round=String(+r.rd+1)}
+  save();if(form.editId){form.game=loadGame()||g}else{saveGame(g);form.game=g}
+  form.gamec='';form.opp='';form.nick='';form.score='';form.games=['','',''];form.gt=['','',''];form.note='';form.turn='';form.editId=null;tab=stay?'add':'log';render();scrollTo(0,0);
+  if(stay)toast('已儲存');else toast('已儲存','再記一場',function(){tab='add';render()})}
+function startEdit(id){var r=recs.filter(function(x){return x.id===id})[0];if(!r)return;form={game:r.game||'',gamec:'',games:(r.games||[]).concat(['','','']).slice(0,3),gt:(r.gt||[]).concat(['','','']).slice(0,3),date:r.date,event:r.event,round:r.rd||'',fmt:r.fmt,me:r.me,opp:r.opp,nick:r.nk||'',res:r.res,score:r.score||'',turn:r.turn||'',note:r.note||'',editId:id};tab='add';render();scrollTo(0,0)}
+function del(id){var i=recs.findIndex(function(r){return r.id===id});if(i<0)return;var r=recs[i];recs.splice(i,1);save();render();toast('已刪除一筆紀錄','復原',function(){recs.splice(Math.min(i,recs.length),0,r);save();render()})}
+function cardH(r){return '<div class="card"><div class="row"><div><b>'+esc(r.event)+(r.rd?' <span class="mu">R'+esc(r.rd)+'</span>':'')+'</b><div class="mu">'+(r.game?'['+esc(r.game)+'] ':'')+r.date+' ・ '+r.fmt+(r.score?' ・ '+r.score:'')+(r.games&&r.games.length?'（'+r.games.map(function(x,i){return RL[x]+(r.gt&&r.gt[i]?r.gt[i]:'')}).join(' ')+'）':(r.turn?' ・ '+r.turn+'攻':''))+'</div></div><span class="badge b-'+r.res.toLowerCase()+'">'+RL[r.res]+'</span></div>'+
+  '<div style="margin-top:6px">'+esc(r.me)+' <span class="mu">vs</span> '+esc(r.opp)+(r.nk?' <span class="mu">（'+esc(r.nk)+'）</span>':'')+'</div>'+(r.note?'<div class="mu" style="margin-top:4px">📝 '+esc(r.note)+'</div>':'')+
+  '<div style="text-align:right"><button class="x" style="color:var(--ac)" onclick="startEdit('+r.id+')">編輯</button> <button class="x" onclick="del('+r.id+')">刪除</button></div></div>'}
+function lstHtml(){var q=flt.q.trim().toLowerCase();
+  var l=recs.filter(function(r){return inR(r,flt.from,flt.to)&&(!flt.deck||r.me===flt.deck)&&(!q||[r.event,r.me,r.opp,r.nk,r.note,r.game].join(' ').toLowerCase().indexOf(q)>=0)}).sort(function(a,b){return b.date.localeCompare(a.date)||b.id-a.id});
+  if(!l.length)return '<div class="empty">沒有符合的紀錄</div>';
+  var o={w:0,l:0,d:0};l.forEach(function(r){o[r.res.toLowerCase()]++});
+  return '<div class="mu" style="margin-bottom:8px">共 '+l.length+' 場：'+o.w+' 勝 '+o.l+' 敗'+(o.d?' '+o.d+' 和':'')+'・勝率 '+rate(o)+'%</div>'+l.map(cardH).join('')}
+function lst(){document.getElementById('lst').innerHTML=lstHtml()}
+function vLog(){
+  return '<h1>戰績列表</h1><button class="btn sec" style="margin:0 0 10px" onclick="tab=\'add\';render()">＋ 再記一場</button><div class="card"><input placeholder="搜尋賽事、牌組、暱稱、備註" value="'+esc(flt.q)+'" oninput="flt.q=this.value;lst()">'+
+  '<div class="row" style="gap:6px;margin-top:6px"><input type="date" value="'+flt.from+'" onchange="flt.from=this.value;lst()"><input type="date" value="'+flt.to+'" onchange="flt.to=this.value;lst()"></div>'+
+  '<select style="margin-top:6px" onchange="flt.deck=this.value;lst()"><option value="">所有我的牌組</option>'+uniq('me').map(function(d){return '<option value="'+esc(d)+'"'+(flt.deck===d?' selected':'')+'>'+esc(d)+'</option>'}).join('')+'</select></div><div id="lst">'+lstHtml()+'</div>'}
+function setRng(k){var d=new Date(),f='';if(k==='30'){d.setDate(d.getDate()-30);f=ymd(d)}else if(k==='m')f=today().slice(0,8)+'01';rng={from:f,to:''};render()}
+function rangeUI(){return '<div class="card"><div class="seg"><button class="sm" onclick="setRng(\'a\')">全部期間</button><button class="sm" onclick="setRng(\'30\')">近 30 天</button><button class="sm" onclick="setRng(\'m\')">本月</button></div><div class="row" style="gap:6px;margin-top:8px"><input type="date" value="'+rng.from+'" onchange="rng.from=this.value;render()"><input type="date" value="'+rng.to+'" onchange="rng.to=this.value;render()"></div><button class="btn sec" style="margin-top:8px" onclick="share()">分享戰績圖片</button></div>'}
+function curList(){return recs.filter(function(r){return(fil==='all'||r.fmt===fil)&&(gfil==='all'||(r.game||'未分類')===gfil)&&inR(r,rng.from,rng.to)})}
+function extras(L){var h='',P=[];
+  L.forEach(function(r){if(r.games&&r.gt)r.games.forEach(function(x,i){if(r.gt[i])P.push({res:x,t:r.gt[i]})});else if(r.fmt==='BO1'&&r.turn)P.push({res:r.res,t:r.turn})});
+  h+=tbl(agg(P,function(p){return p.t+'攻'}),'單局先後攻勝率（含 BO3 每一局）');
+  var ms=[];L.forEach(function(r){if(ms.indexOf(r.me)<0)ms.push(r.me)});
+  if(ms.length){if(ms.indexOf(mdeck)<0)mdeck=ms[0];
+    h+='<div class="card"><b>牌組對戰表</b><select style="margin-top:8px" onchange="mdeck=this.value;render()">'+ms.map(function(d){return '<option value="'+esc(d)+'"'+(d===mdeck?' selected':'')+'>'+esc(d)+'</option>'}).join('')+'</select></div>'+tbl(agg(L.filter(function(r){return r.me===mdeck}),function(r){return r.opp}),'此牌組對上各牌組')}
+  return h+tbl(agg(L.filter(function(r){return r.nk}),function(r){return r.nk}),'對手戰績（暱稱）')}
+var _vS=vStats;
+vStats=function(){var all=recs,h;recs=all.filter(function(r){return inR(r,rng.from,rng.to)});try{h=_vS()}finally{recs=all}
+  h=h.replace('</h1>','</h1>'+rangeUI());var L=curList();return L.length?h+extras(L):h};
+function share(){var L=curList(),o={w:0,l:0,d:0};L.forEach(function(r){o[r.res.toLowerCase()]++});
+  var m=agg(L,function(r){return r.me}),ks=Object.keys(m).sort(function(a,b){return n3(m[b])-n3(m[a])}).slice(0,4);
+  var c=document.createElement('canvas');c.width=800;c.height=400+ks.length*70;var x=c.getContext('2d'),F='"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif';
+  var g=x.createLinearGradient(0,0,800,c.height);g.addColorStop(0,'#2b3f7a');g.addColorStop(1,'#12162b');x.fillStyle=g;x.fillRect(0,0,800,c.height);
+  x.fillStyle='#fff';x.font='bold 40px '+F;x.fillText('TCG 戰績'+(gfil!=='all'?'｜'+gfil:''),40,70);
+  x.font='24px '+F;x.fillStyle='#b4bdd8';x.fillText((rng.from||'全部期間')+(rng.to?' ~ '+rng.to:'')+'　共 '+L.length+' 場'+(fil!=='all'?'｜'+fil:''),40,115);
+  x.fillStyle='#fff';x.font='bold 96px '+F;x.fillText(rate(o)+'%',40,240);
+  x.font='26px '+F;x.fillStyle='#b4bdd8';x.fillText('勝率（不含和局）',40,285);
+  x.textAlign='right';x.fillStyle='#fff';x.font='bold 52px '+F;x.fillText(o.w+' 勝 '+o.l+' 敗'+(o.d?' '+o.d+' 和':''),760,225);x.textAlign='left';
+  ks.forEach(function(k,i){var y=345+i*70,p=m[k];x.fillStyle='#fff';x.font='26px '+F;x.fillText(k,40,y);x.textAlign='right';x.fillStyle='#b4bdd8';x.fillText(n3(p)+' 場　'+rate(p)+'%',760,y);x.textAlign='left';x.fillStyle='#2a3150';x.fillRect(40,y+14,720,12);x.fillStyle='#4ade80';x.fillRect(40,y+14,7.2*rate(p),12)});
+  SC=c;var ov=document.createElement('div');ov.className='ov';ov.id='ov';ov.innerHTML='<img src="'+c.toDataURL('image/png')+'"><div class="mu" style="color:#fff">可直接分享，或長按圖片儲存</div><button class="btn" onclick="shareImg()">分享</button><button class="btn sec" style="color:#fff;background:none" onclick="document.getElementById(\'ov\').remove()">關閉</button>';document.body.appendChild(ov)}
+function shareImg(){SC.toBlob(function(b){var f=new File([b],'tcg-record.png',{type:'image/png'});if(navigator.canShare&&navigator.canShare({files:[f]}))navigator.share({files:[f]}).catch(function(){});else alert('此裝置不支援直接分享，請長按圖片儲存')})}
+function evList(){var m={};recs.forEach(function(r){var e=m[r.event]=m[r.event]||{n:r.event,g:r.game||'',a:r.date,b:r.date,w:0,l:0,d:0,rs:[]};if(r.date<e.a)e.a=r.date;if(r.date>e.b)e.b=r.date;e[r.res.toLowerCase()]++;e.rs.push(r)});return Object.keys(m).map(function(k){return m[k]}).sort(function(a,b){return b.b.localeCompare(a.b)})}
+function setEv(i,k,v){var n=evList()[i].n;EV[n]=EV[n]||{};EV[n][k]=v.trim();sv(EVK,EV)}
+function vEv(){var L=evList();if(!L.length)return '<h1>賽事總覽</h1><div class="empty">還沒有紀錄</div>';
+  return '<h1>賽事總覽</h1>'+L.map(function(e,i){var ev=EV[e.n]||{};return '<div class="card"><b>'+esc(e.n)+'</b><div class="mu">'+(e.g?'['+esc(e.g)+'] ':'')+e.a+(e.b!==e.a?' ~ '+e.b:'')+'</div><div style="margin:6px 0">'+e.w+' 勝 '+e.l+' 敗'+(e.d?' '+e.d+' 和':'')+' ・ 勝率 '+rate(e)+'%</div>'+
+    '<div class="mu">'+e.rs.slice().sort(function(a,b){return(+a.rd||0)-(+b.rd||0)||a.id-b.id}).map(function(r){return(r.rd?'R'+esc(r.rd)+' ':'')+RL[r.res]+' vs '+esc(r.opp)}).join('<br>')+'</div>'+
+    '<div class="row" style="gap:8px"><div style="flex:1"><label>最終名次</label><input value="'+esc(ev.rk||'')+'" onchange="setEv('+i+',\'rk\',this.value)"></div><div style="flex:1"><label>參賽人數</label><input inputmode="numeric" value="'+esc(ev.pn||'')+'" onchange="setEv('+i+',\'pn\',this.value)"></div></div></div>'}).join('')}
+function deckStat(){var m={};recs.forEach(function(r){m[r.me]=(m[r.me]||0)+1});return m}
+function renDeck(i){var old=Object.keys(deckStat()).sort()[i],n=prompt('新的牌組名稱（輸入已存在的名稱即合併）',old);if(!n||!n.trim()||n.trim()===old)return;n=n.trim();recs.forEach(function(r){if(r.me===old)r.me=n});save();render();toast('已更新牌組名稱')}
+function lf(i,d){LF[i]+=d;render()}
+var DC={n:1,both:0,r:[[],[]],m:[],busy:0};
+(function(){var s=document.createElement('style');s.textContent='@keyframes dshake{0%{transform:rotate(0)}20%{transform:rotate(-22deg) translateY(-10px)}45%{transform:rotate(18deg) translateY(2px)}70%{transform:rotate(-12deg) translateY(-6px)}100%{transform:rotate(0)}}.rolling .die{animation:dshake .3s linear infinite}';document.head.appendChild(s)})();
+function pip(n){var P={1:[4],2:[0,8],3:[0,4,8],4:[0,2,6,8],5:[0,2,4,6,8],6:[0,2,3,5,6,8]}[n],h='';for(var i=0;i<9;i++)h+='<i style="width:9px;height:9px;border-radius:50%;background:'+(P.indexOf(i)>=0?'#111':'transparent')+'"></i>';return '<span class="die" style="display:inline-grid;grid-template-columns:repeat(3,9px);gap:4px;padding:8px;background:#fff;border-radius:12px;box-shadow:0 3px 8px rgba(0,0,0,.35);margin:0 5px">'+h+'</span>'}
+function dh(a){return a&&a.length?'<div>'+a.map(pip).join('')+'</div>'+(a.length>1?'<div style="margin-top:4px;font-size:14px;opacity:.85">合計 '+(a[0]+a[1])+'</div>':''):''}
+function rl(n){var a=[];for(var i=0;i<n;i++)a.push(1+Math.floor(Math.random()*6));return a}
+function dcSet(k,v){if(DC.busy)return;DC[k]=v;DC.r=[[],[]];DC.m=[];render()}
+function roll(){if(DC.busy)return;DC.busy=1;var ids=DC.both?[0,1]:['m'],fin=ids.map(function(){return rl(DC.n)}),t=0;
+ ids.forEach(function(k){var e=document.getElementById('d'+k);if(e)e.className='rolling'});
+ var iv=setInterval(function(){t++;ids.forEach(function(k){var e=document.getElementById('d'+k);if(e)e.innerHTML=dh(rl(DC.n))});
+  if(t>=11){clearInterval(iv);DC.busy=0;if(DC.both)DC.r=[fin[0],fin[1]];else DC.m=fin[0];render()}},90)}
+function vLife(){try{navigator.wakeLock&&navigator.wakeLock.request('screen').catch(function(){})}catch(e){}
+ var st=LS>=1000?[-1000,-100,100,1000]:[-5,-1,1,5];
+ function half(i,t,bg,rot){return '<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;background:'+bg+';color:#fff;'+(rot?'transform:rotate(180deg);':'')+'"><div style="font-size:15px;opacity:.8">'+t+'</div><div style="font-size:'+(String(LF[i]).length>4?72:96)+'px;font-weight:700;line-height:1;color:'+(LF[i]<=0&&LS>0?'#fca5a5':'#fff')+'">'+LF[i]+'</div><div style="display:flex;gap:8px;width:92%;max-width:420px">'+st.map(function(d){return '<button onclick="lf('+i+','+d+')" style="flex:1;padding:14px 0;border:0;border-radius:14px;background:rgba(255,255,255,.16);color:#fff;font-size:20px;font-weight:600;cursor:pointer">'+(d>0?'+':'')+d+'</button>'}).join('')+'</div>'+(DC.both?'<div id="d'+i+'" style="min-height:64px;text-align:center">'+dh(DC.r[i])+'</div>':'')+'</div>'}
+ function chip(on,fn,label){return '<button onclick="'+fn+'" style="padding:8px 12px;border:0;border-radius:10px;font-weight:600;cursor:pointer;color:#fff;background:'+(on?'#4f46e5':'rgba(255,255,255,.16)')+'">'+label+'</button>'}
+ return '<div style="position:fixed;left:0;right:0;top:0;bottom:calc(48px + env(safe-area-inset-bottom,0px));padding-top:env(safe-area-inset-top,0px);display:flex;flex-direction:column;z-index:5;background:#0f172a">'+half(1,'對手','#7f1d1d',1)
+ +'<div style="padding:8px;background:#0b1020;color:#fff;display:flex;flex-direction:column;gap:8px;align-items:center"><div style="display:flex;align-items:center;gap:10px"><span style="font-size:13px;opacity:.8">起始</span><input type="number" value="'+LS+'" onchange="var v=parseInt(this.value);LS=isNaN(v)?20:v;LF=[LS,LS];render()" style="width:90px;text-align:center;padding:6px"><button onclick="LF=[LS,LS];render()" style="padding:8px 16px;border:0;border-radius:10px;background:#4f46e5;color:#fff;font-weight:600;cursor:pointer">重置</button></div>'
+ +'<div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:center">'+chip(DC.n===1,"dcSet('n',1)",'1 顆')+chip(DC.n===2,"dcSet('n',2)",'2 顆')+chip(DC.both,"dcSet('both',"+(DC.both?0:1)+")",(DC.both?'☑ ':'☐ ')+'雙方同時骰')+'<button onclick="roll()" style="padding:8px 18px;border:0;border-radius:10px;background:#16a34a;color:#fff;font-weight:700;cursor:pointer">擲骰</button></div>'
+ +(DC.both?'':'<div id="dm" style="min-height:64px;text-align:center">'+dh(DC.m)+'</div>')+'</div>'+half(0,'我','#1e3a8a',0)+'</div>'}
+function counterHtml(){return '<div class="card"><b>生命值計數器</b><div class="row" style="margin:8px 0"><span class="mu">起始生命值</span><input type="number" style="width:90px" value="'+LS+'" onchange="LS=+this.value||20;LF=[LS,LS];render()"></div><div class="big" style="grid-template-columns:1fr 1fr">'+[0,1].map(function(i){return '<div><div class="mu">'+(i?'對手':'我')+'</div><div class="lf" style="color:'+(LF[i]<=0?'var(--l)':'var(--tx)')+'">'+LF[i]+'</div><div class="seg" style="margin-top:6px">'+[-5,-1,1,5].map(function(d){return '<button class="sm" onclick="lf('+i+','+d+')">'+(d>0?'+':'')+d+'</button>'}).join('')+'</div></div>'}).join('')+'</div><button class="btn sec" onclick="LF=[LS,LS];render()">重置</button></div>'}
+var _vSet=vSet;
+vSet=function(){return _vSet().replace('<h1>資料備份</h1>','').replace(/(<textarea id="bk"[^>]*>)[\s\S]*?(<\/textarea>)/,function(m,a,b){return a+esc(JSON.stringify({recs:recs,ev:EV}))+b})};
+function imp(){try{var a=JSON.parse(document.getElementById('bk').value),r=Array.isArray(a)?a:a.recs;if(!Array.isArray(r))throw 0;if(!confirm('將覆蓋現有 '+recs.length+' 筆資料，確定？'))return;recs=r;save();if(!Array.isArray(a)&&a.ev){EV=a.ev;sv(EVK,EV)}alert('已還原 '+r.length+' 筆');render()}catch(e){alert('格式不正確')}}
+function vMore(){var m=deckStat(),ks=Object.keys(m).sort();
+  return '<h1>更多</h1><div class="card"><b>牌組管理</b><div class="mu">改名會同步修改所有紀錄中的「我的牌組」；輸入已存在的名稱即可合併。</div>'+(ks.length?ks.map(function(k,i){return '<div class="row" style="margin-top:8px"><span>'+esc(k)+' <span class="mu">'+m[k]+' 次</span></span><button class="x" style="color:var(--ac)" onclick="renDeck('+i+')">改名／合併</button></div>'}).join(''):'<div class="mu" style="margin-top:8px">尚無牌組</div>')+'</div>'+'<h1 style="margin-top:18px">資料備份</h1>'+vSet()}
+function render(){document.getElementById('app').innerHTML=({add:vAdd,log:vLog,stats:vStats,ev:vEv,life:vLife,more:vMore})[tab]();
+  document.getElementById('nav').innerHTML=[['add','＋ 記錄'],['log','列表'],['stats','統計'],['ev','賽事'],['life','對戰'],['more','更多']].map(function(x){return '<button class="'+(tab===x[0]?'on':'')+'" onclick="tab=\''+x[0]+'\';render();scrollTo(0,0)">'+x[1]+'</button>'}).join('')}
+render();
+</script>
+<script>
+var S=(function(){var d={lang:'zh',mode:'auto',acc:'#4f46e5'};try{return Object.assign(d,JSON.parse(localStorage.getItem('tcg_set_v1')||'{}'))}catch(e){return d}})();
+var DICT=("結果|Result|結果\n整場結果|Match result|試合結果\n請依序填寫各局勝敗|Enter each game's result in order|各ゲームの勝敗を順に入力してください\n請選擇 TCG 分類|Please select a TCG|TCGを選択してください\n請填寫賽事名稱、我的牌組與對手牌組|Enter the event name, your deck and the opponent's deck|大会名、自分と相手のデッキを入力してください\n請填寫各局勝敗（Game 1、Game 2，必要時 Game 3）|Enter each game result (Game 1, Game 2, and Game 3 if needed)|各ゲームの勝敗を入力してください（Game 1・2、必要ならGame 3）\n刪除這筆紀錄？|Delete this record?|この記録を削除しますか？\n請選擇…|Select…|選択…\n＋ 自訂分類…|+ Custom TCG…|＋ カスタムTCG…\n輸入 TCG 名稱|Enter TCG name|TCG名を入力\n編輯戰績|Edit record|記録を編集\n新增戰績|New record|記録を追加\nTCG 分類|TCG|TCG\n日期|Date|日付\n賽事名稱|Event name|大会名\n例：店賽 10月場|e.g. Store event Oct|例：店舗大会10月\n賽制|Format|形式\n我的牌組|My deck|自分のデッキ\n牌組名稱|Deck name|デッキ名\n對手牌組|Opponent deck|相手のデッキ\n對手牌組名稱|Opponent deck name|相手のデッキ名\n先後攻（選填）|Turn order (optional)|先攻/後攻（任意）\n先後攻（必填）|Turn order (required)|先攻/後攻（必須）\n先攻|1st|先攻\n後攻|2nd|後攻\n備註（選填）|Notes (optional)|メモ（任意）\n例：關鍵失誤、對手特殊打法|e.g. key misplay, opponent's special play|例：重要なミス、相手の特殊な動き\n更新戰績|Update record|記録を更新\n儲存戰績|Save record|記録を保存\n取消編輯|Cancel editing|編集をやめる\n戰績列表|Records|戦績一覧\n還沒有紀錄|No records yet|まだ記録がありません\n編輯|Edit|編集\n刪除|Delete|削除\n未分類|Uncategorized|未分類\n統計|Stats|統計\n全部 TCG|All TCGs|すべてのTCG\n沒有資料|No data|データなし\n勝率（不含和局）|Win rate (excl. draws)|勝率（引き分け除く）\n依 TCG 分類|By TCG|TCG別\n依賽制|By format|形式別\n先後攻勝率|Win rate by turn order|先攻/後攻別勝率\n我的牌組勝率|My deck win rate|自分のデッキの勝率\n對手牌組（我的勝率）|Opponent decks (my win rate)|相手デッキ（自分の勝率）\n牌組勝敗和比例|Deck W/L/D ratio|デッキの勝敗分比率\n全部|All|すべて\n資料備份|Data backup|データバックアップ\n資料只存在這個瀏覽器／裝置上。請定期複製下方文字備份，換裝置時貼上即可還原。|Data is stored only on this browser/device. Copy the text below regularly as a backup and paste it to restore on a new device.|データはこのブラウザ／端末にのみ保存されます。下のテキストを定期的にコピーしてバックアップし、機種変更時に貼り付けて復元してください。\n備份資料（JSON）|Backup data (JSON)|バックアップデータ（JSON）\n複製備份|Copy backup|バックアップをコピー\n用上方內容還原（覆蓋現有資料）|Restore from the text above (overwrites current data)|上の内容で復元（現在のデータを上書き）\n清除所有資料|Delete all data|すべてのデータを削除\n已複製|Copied|コピーしました\n請手動長按複製|Please long-press to copy manually|長押ししてコピーしてください\n格式不正確|Invalid format|形式が正しくありません\n確定清除全部資料？此動作無法復原|Delete all data? This cannot be undone.|すべてのデータを削除しますか？元に戻せません\n＋ 記錄|+ Add|＋ 記録\n列表|List|一覧\n備份|Backup|バックアップ\n輪次（選填）|Round (optional)|ラウンド（任意）\n例：1|e.g. 1|例：1\n對手暱稱（選填）|Opponent nickname (optional)|相手のニックネーム（任意）\n例：小明|e.g. Alex|例：たろう\n儲存並再記一場|Save & add another|保存して続けて記録\n請選擇每一局的先後攻|Select turn order for every game|各ゲームの先攻/後攻を選択してください\n請選擇先後攻|Select turn order|先攻/後攻を選択してください\n已儲存|Saved|保存しました\n再記一場|Add another|続けて記録\n已刪除一筆紀錄|Record deleted|記録を削除しました\n復原|Undo|元に戻す\n沒有符合的紀錄|No matching records|該当する記録がありません\n＋ 再記一場|+ Add another|＋ 続けて記録\n搜尋賽事、牌組、暱稱、備註|Search events, decks, nicknames, notes|大会・デッキ・ニックネーム・メモを検索\n所有我的牌組|All my decks|すべての自分のデッキ\n全部期間|All time|全期間\n近 30 天|Last 30 days|直近30日\n本月|This month|今月\n分享戰績圖片|Share stats image|戦績画像を共有\n單局先後攻勝率（含 BO3 每一局）|Per-game win rate by turn order (incl. every BO3 game)|ゲーム別 先攻/後攻勝率（BO3の各ゲーム含む）\n牌組對戰表|Deck matchup table|デッキ対戦表\n此牌組對上各牌組|This deck vs each deck|このデッキの対戦相手別\n對手戰績（暱稱）|Record vs opponents (nickname)|対戦相手別戦績（ニックネーム）\nTCG 戰績|TCG Record|TCG戦績\n可直接分享，或長按圖片儲存|Share directly, or long-press the image to save|そのまま共有、または画像を長押しで保存\n分享|Share|共有\n關閉|Close|閉じる\n此裝置不支援直接分享，請長按圖片儲存|Sharing isn't supported here. Long-press the image to save.|この端末では直接共有できません。画像を長押しで保存してください\n賽事總覽|Events|大会一覧\n最終名次|Final place|最終順位\n參賽人數|Entrants|参加人数\n新的牌組名稱（輸入已存在的名稱即合併）|New deck name (an existing name merges them)|新しいデッキ名（既存の名前なら統合）\n已更新牌組名稱|Deck name updated|デッキ名を更新しました\n對手|Opponent|相手\n起始|Start|開始\n重置|Reset|リセット\n我|Me|自分\n生命值計數器|Life counter|ライフカウンター\n起始生命值|Starting life|開始ライフ\n更多|More|その他\n牌組管理|Deck manager|デッキ管理\n改名會同步修改所有紀錄中的「我的牌組」；輸入已存在的名稱即可合併。|Renaming updates \"My deck\" in every record; entering an existing name merges them.|名前変更は全記録の「自分のデッキ」に反映されます。既存の名前を入力すると統合されます。\n改名／合併|Rename / merge|名前変更／統合\n尚無牌組|No decks yet|デッキがありません\n賽事|Events|大会\n生命值|Life|ライフ\n設定|Settings|設定\n語言|Language|言語\n外觀|Appearance|外観\n跟隨系統|System|システム\n淺色|Light|ライト\n深色|Dark|ダーク\n主題色|Accent color|テーマカラー\n勝|W|勝\n敗|L|敗\n和|D|分\n未記|Not set|未記入\n對戰|Battle|対戦\n擲骰|Roll|サイコロを振る\n1 顆|1 die|1個\n2 顆|2 dice|2個\n雙方同時骰|Both players roll|両者同時に振る").split("\n").map(function(l){return l.split("|")});
+var SUBX=[['勝率','Win rate','勝率'],['目前連勝','Current streak','現在の連勝'],['最高連勝','Best streak','最高連勝'],['先攻','1st','先攻'],['後攻','2nd','後攻'],['符文戰場','Riftbound','リフトバウンド'],['合計','Total','合計']],E={},SB=[];
+DICT.forEach(function(e){if(e[0].length>4)SB.push(e);else E[e[0]]=e});SUBX.forEach(function(e){SB.push(e)});SB.sort(function(a,b){return b[0].length-a[0].length});
+function tx(s){if(S.lang==='zh'||!/[\u4e00-\u9fff]/.test(s))return s;var k=S.lang==='en'?1:2,t=s.trim();if(E[t])return s.replace(t,E[t][k]);
+ s=s.replace(/將覆蓋現有 (\d+) 筆資料，確定？/,k==1?'Overwrite the existing $1 records?':'既存の$1件のデータを上書きしますか？').replace(/已還原 (\d+) 筆/,k==1?'Restored $1 records':'$1件を復元しました').replace(/共 (\d+) 場/g,k==1?'Total $1 matches':'全$1試合').replace(/(\d+) ?場/g,k==1?'$1 matches':'$1試合').replace(/(\d+) ?次/g,k==1?'$1×':'$1回')
+  .replace(/(\d+)\s*勝(?![率連])/g,k==1?'$1W':'$1勝').replace(/(\d+)\s*敗/g,k==1?'$1L':'$1敗').replace(/(\d+)\s*和/g,k==1?'$1D':'$1分')
+  .replace(/（([勝敗和]+)）/g,function(m,a){return '（'+a.split('').map(function(c){return k==1?{勝:'W',敗:'L',和:'D'}[c]:{勝:'勝',敗:'敗',和:'分'}[c]}).join('')+'）'});
+ for(var i=0;i<SB.length;i++)if(s.indexOf(SB[i][0])>=0)s=s.split(SB[i][0]).join(SB[i][k]);return s}
+function tr(root){if(S.lang==='zh')return;var w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT),n,a=[];while(n=w.nextNode())a.push(n);a.forEach(function(n){var v=tx(n.nodeValue);if(v!==n.nodeValue)n.nodeValue=v});
+ root.querySelectorAll('[placeholder],[title]').forEach(function(e){['placeholder','title'].forEach(function(p){var v=e.getAttribute(p);if(v){var x=tx(v);if(x!==v)e.setAttribute(p,x)}})})}
+['alert','confirm','prompt'].forEach(function(n){var o=window[n];window[n]=function(m,d){return o.call(window,tx(String(m)),d)}});
+try{var _ft=CanvasRenderingContext2D.prototype.fillText;CanvasRenderingContext2D.prototype.fillText=function(t,x,y,w){return _ft.call(this,tx(String(t)),x,y,w)}}catch(e){}
+var busy=false;new MutationObserver(function(){if(busy||S.lang==='zh')return;busy=true;try{tr(document.body)}finally{busy=false}}).observe(document.body,{childList:true,subtree:true});
+var SW=['#4f46e5','#2563eb','#0d9488','#16a34a','#ea580c','#db2777','#9333ea'];
+function applySet(){var r=document.documentElement;r.lang=({zh:'zh-Hant',en:'en',ja:'ja'})[S.lang];if(S.mode==='auto')r.removeAttribute('data-theme');else r.setAttribute('data-theme',S.mode);r.style.setProperty('--ac',S.acc)}
+function setS(k,v){S[k]=v;try{localStorage.setItem('tcg_set_v1',JSON.stringify(S))}catch(e){}applySet();render()}
+function sg(k,items){return '<div class="seg">'+items.map(function(x){return '<button class="'+(S[k]===x[0]?'on':'')+'" onclick="setS(\''+k+'\',\''+x[0]+'\')">'+x[1]+'</button>'}).join('')+'</div>'}
+function setHtml(){return '<div class="card"><b>設定</b><label>語言</label>'+sg('lang',[['zh','繁體中文'],['en','English'],['ja','日本語']])+'<label>外觀</label>'+sg('mode',[['auto','跟隨系統'],['light','淺色'],['dark','深色']])+'<label>主題色</label><div style="display:flex;gap:10px;flex-wrap:wrap">'+SW.map(function(c){return '<button aria-label="'+c+'" onclick="setS(\'acc\',\''+c+'\')" style="width:40px;height:40px;border-radius:50%;cursor:pointer;background:'+c+';border:3px solid '+(S.acc===c?'var(--tx)':'transparent')+'"></button>'}).join('')+'</div></div>'}
+var _vM=vMore;vMore=function(){return _vM().replace('</h1>','</h1>'+setHtml())};
+applySet();render();
 </script>
 </body>
 </html>

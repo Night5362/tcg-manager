@@ -56,7 +56,7 @@ td,th{padding:6px 8px;border-bottom:1px solid var(--bd);text-align:left;white-sp
 <script>
 var RB=['Ahri','Akali','Ambessa','Annie','Azir','Darius','Diana','Draven','Ekko','Evelynn','Ezreal','Fiora','Garen','Irelia','Ivern','Jarvan IV','Jax','Jayce','Jhin','Jinx','Kai\'Sa','Kennen','Kha\'Zix','K\'Sante','LeBlanc','Lee Sin','Leona','Lillia','Lucian','Lux','Master Yi','Mel','Miss Fortune','Mordekaiser','Nasus','Orianna','Ornn','Poppy','Pyke','Rek\'Sai','Renata Glasc','Renekton','Rengar','Riven','Rumble','Sett','Seraphine','Shen','Sivir','Teemo','Vex','Vi','Viktor','Volibear','Yasuo','Zed','Ziggs'];
 function dnH(k,c){k=String(k);var i=k.indexOf('（');if(i<=0||k.slice(-1)!=='）')return esc(k);return esc(k.slice(0,i))+' <span style="font-size:10px;font-weight:400;color:'+(c||'var(--mu)')+'">'+esc(k.slice(i+1,-1))+'</span>'}
-function evChip(){if(!flt.ek)return '';var e=evList().filter(function(x){return x.k===flt.ek})[0];return '<div class="row" style="margin-top:8px;align-items:center"><span class="mu">賽事篩選：'+(e?esc(e.n):'')+'</span><button class="x" style="flex:none" onclick="flt.ek=\'\';render()">清除</button></div>'}
+function evChip(){if(!flt.ek)return '';var e=evList().filter(function(x){return x.k===flt.ek})[0];return '<div class="row" style="margin-top:8px;align-items:center"><span class="mu">賽事篩選：'+(e?esc(e.n):'')+'</span><button class="x" style="flex:none" onclick="flt={q:\'\',from:\'\',to:\'\',deck:\'\',ek:\'\'};render()">清除</button></div>'}
 function goEv(i){var e=evList()[i];if(!e)return;var d=e.rs[0].me;flt={q:'',from:e.a,to:e.b,deck:e.rs.every(function(r){return r.me===d})?d:'',ek:e.k};tab='log';render();scrollTo(0,0)}
 function dkn(r){return r.me+(r.mn?'（'+r.mn+'）':'')}
 function okn(r){return r.opp+(r.on?'（'+r.on+'）':'')}

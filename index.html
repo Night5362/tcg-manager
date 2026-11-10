@@ -383,7 +383,7 @@ function tx(s){if(!/[\u4e00-\u9fff]/.test(s))return s;var t=s.trim();if(imOn()){
   .replace(/(\d+)\s*勝(?![率連])/g,k==1?'$1W':'$1勝').replace(/(\d+)\s*敗/g,k==1?'$1L':'$1敗').replace(/(\d+)\s*和/g,k==1?'$1D':'$1分')
   .replace(/（([勝敗和]+)）/g,function(m,a){return '（'+a.split('').map(function(c){return k==1?{勝:'W',敗:'L',和:'D'}[c]:{勝:'勝',敗:'敗',和:'分'}[c]}).join('')+'）'});
  for(var i=0;i<SB.length;i++)if(s.indexOf(SB[i][0])>=0)s=s.split(SB[i][0]).join(SB[i][k]);return s}
-function tr(root){if(!needTx())return;var w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT),n,a=[];while(n=w.nextNode())a.push(n);a.forEach(function(n){var v=tx(n.nodeValue);if(v!==n.nodeValue)n.nodeValue=v});
+function tr(root){if(!needTx())return;var w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT),n,a=[],pn;while(n=w.nextNode()){pn=n.parentNode&&n.parentNode.nodeName;if(pn==='SCRIPT'||pn==='STYLE'||pn==='TEXTAREA')continue;a.push(n)}a.forEach(function(n){var v=tx(n.nodeValue);if(v!==n.nodeValue)n.nodeValue=v});
  root.querySelectorAll('[placeholder],[title]').forEach(function(e){['placeholder','title'].forEach(function(p){var v=e.getAttribute(p);if(v){var x=tx(v);if(x!==v)e.setAttribute(p,x)}})})}
 function imTips(){if(!imOn())return;var M={'出示印記':'登入','締結契約':'註冊','Present sigil':'Sign in','Forge a pact':'Sign up'};document.querySelectorAll('button').forEach(function(b){var t=b.textContent.trim();if(M[t]&&!b.classList.contains('imtip')){b.classList.add('imtip');b.setAttribute('data-tip',M[t])}})}
 var _tr0=tr;tr=function(r){_tr0(r);imTips()};

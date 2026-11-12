@@ -65,6 +65,7 @@ th{color:var(--mu);font-weight:600}
 .card.rec .x{font-weight:600}
 a{color:var(--ac)}
 #dk-tabs button{border-color:var(--bd)!important}
+@media (max-width:600px){#home{padding:0!important}#homeCard{max-width:none!important;height:100%;min-height:100%!important;margin:0;border:0;border-radius:0;box-shadow:none;justify-content:flex-start!important;padding:calc(env(safe-area-inset-top,0px) + 14vh) 28px calc(env(safe-area-inset-bottom,0px) + 28px)!important}#homeGo{margin-top:auto!important}}
 </style>
 </head>
 <body>
@@ -419,13 +420,13 @@ function cloudHtml(){var h='<div class="card"><b>星界備份（雲端）</b>';i
 /* ===== 首頁 ===== */
 function showHome(){if(document.getElementById('home'))return;var n=recs.length,w=recs.filter(function(r){return r.res==='W'}).length,d=document.createElement('div');d.id='home';
  d.style.cssText='position:fixed;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px;background:var(--bg);transition:opacity .45s,transform .45s';
- d.innerHTML='<div class="card" style="width:100%;max-width:460px;padding:34px 28px 28px;text-align:left;background:radial-gradient(420px 260px at 85% 0%,var(--glow),transparent 70%),linear-gradient(90deg,transparent,var(--ac) 50%,transparent) top/100% 1px no-repeat,var(--card)">'
- +'<div style="display:inline-block;border:1px solid var(--ac);color:var(--ac);font:600 12px/1 ui-monospace,Menlo,Consolas,monospace;letter-spacing:.28em;padding:7px 8px 7px 11px">TCG · MATCH LOG</div>'
- +'<div style="margin-top:18px;font-weight:900;font-size:clamp(52px,16vw,76px);line-height:1.02;letter-spacing:.04em"><span style="color:var(--tx)">征戰</span><br><span style="color:var(--ac)">手記</span></div>'
- +'<div style="margin-top:12px;font:500 14px/1 ui-monospace,Menlo,Consolas,monospace;letter-spacing:.42em;color:var(--mu)">MATCH JOURNAL</div>'
- +'<div style="margin-top:18px;color:var(--mu);font-size:15px">記下每一場征戰，找出你最強的牌組</div>'
- +(n?'<div style="margin-top:8px;color:var(--tx);font-size:15px">已記錄 <b style="color:var(--ac)">'+n+'</b> 筆，勝 <b style="color:var(--w)">'+w+'</b> 筆</div>':'')
- +'<button id="homeGo" class="btn" style="margin-top:24px">翻開手記</button></div>';
+ d.innerHTML='<div class="card" id="homeCard" style="width:100%;max-width:640px;min-height:min(78vh,720px);display:flex;flex-direction:column;justify-content:center;padding:clamp(32px,6vw,56px) clamp(24px,6vw,56px);text-align:left;background:radial-gradient(520px 340px at 85% 0%,var(--glow),transparent 70%),linear-gradient(90deg,transparent,var(--ac) 50%,transparent) top/100% 1px no-repeat,var(--card)">'
+ +'<div style="display:inline-block;border:1px solid var(--ac);color:var(--ac);font:600 clamp(12px,2.6vw,15px)/1 ui-monospace,Menlo,Consolas,monospace;letter-spacing:.28em;padding:8px 9px 8px 12px;align-self:flex-start">TCG · MATCH LOG</div>'
+ +'<div style="margin-top:18px;font-weight:900;font-size:clamp(72px,24vw,132px);line-height:1.02;letter-spacing:.04em"><span style="color:var(--tx)">征戰</span><br><span style="color:var(--ac)">手記</span></div>'
+ +'<div style="margin-top:12px;font:500 clamp(14px,3.4vw,19px)/1 ui-monospace,Menlo,Consolas,monospace;letter-spacing:.42em;color:var(--mu)">MATCH JOURNAL</div>'
+ +'<div style="margin-top:22px;color:var(--mu);font-size:clamp(15px,3.8vw,19px)">記下每一場征戰，找出你最強的牌組</div>'
+ +(n?'<div style="margin-top:10px;color:var(--tx);font-size:clamp(15px,3.8vw,19px)">已記錄 <b style="color:var(--ac)">'+n+'</b> 筆，勝 <b style="color:var(--w)">'+w+'</b> 筆</div>':'')
+ +'<button id="homeGo" class="btn" style="margin-top:32px;padding:15px;font-size:18px">翻開手記</button></div>';
  document.body.appendChild(d);
  document.getElementById('homeGo').onclick=function(){var rm=function(){d.remove()};if(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches){rm();return}d.style.opacity='0';d.style.transform='scale(1.02)';d.style.pointerEvents='none';setTimeout(rm,460)}}
 migRB();migEt();migEk();applySet();render();showHome();

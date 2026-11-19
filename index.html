@@ -79,6 +79,11 @@ th{color:var(--mu);font-weight:600}
 a{color:var(--ac)}
 #dk-tabs button{border-color:var(--bd)!important}
 @media (max-width:600px){#home{padding:0!important}#homeCard{max-width:none!important;height:100%;min-height:100%!important;margin:0;border:0;border-radius:0;box-shadow:none;justify-content:flex-start!important;padding:calc(env(safe-area-inset-top,0px) + 14vh) 28px calc(env(safe-area-inset-bottom,0px) + 28px)!important}#homeGo{margin-top:auto!important}}
+@keyframes tabFade{from{opacity:0}to{opacity:1}}
+@keyframes tabIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+#app.tin{animation:tabFade .18s ease-out backwards}
+#app.tup{animation:tabIn .24s cubic-bezier(.2,.7,.2,1) backwards}
+@media(prefers-reduced-motion:reduce){#app.tin,#app.tup{animation:none}}
 </style>
 </head>
 <body>
@@ -558,6 +563,7 @@ function vpAll(){vpShow('me');vpShow('opp')}
 var _rbH=rbHtml;rbHtml=function(k,l,p){return _rbH(k,l,p)+'<div id="vp_'+k+'"></div>'};
 var _rbC=rbChoose;rbChoose=function(k,i){_rbC(k,i);form[k==='me'?'mv':'ov']='';vpShow(k)};
 var _rn1=render;render=function(){_rn1();if(tab==='add')setTimeout(vpAll,0)};
+var _lt=(tab==='evd'?'ev':tab),_rn2=render;render=function(){_rn2();var g=tab==='evd'?'ev':tab;if(g!==_lt&&!(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches)){var m=document.getElementById('app');m.classList.remove('tin','tup');void m.offsetWidth;m.classList.add(tab==='evd'?'tup':'tin')}_lt=g};
 
 /* ---- 牌組選擇浮窗 ---- */
 (function(){var c=document.createElement('style');c.textContent='#dsw{position:fixed;inset:0;z-index:60;background:rgba(0,0,0,.6);display:flex;align-items:flex-end;justify-content:center}#dsw .dp{width:100%;max-width:640px;max-height:80vh;display:flex;flex-direction:column;background:var(--card);border:1px solid var(--bd);border-radius:18px 18px 0 0;box-shadow:var(--sh);padding:12px 12px calc(12px + env(safe-area-inset-bottom,0px))}#dsw .dh{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}#dsw .dh b{font-size:16px}#dsw .dl{overflow:auto;margin-top:8px;border-top:1px solid var(--bd)}#dsw .di{display:flex;align-items:center;gap:12px;width:100%;padding:8px 6px;border:0;border-bottom:1px solid var(--bd);background:none;color:var(--tx);font:inherit;text-align:left;cursor:pointer}#dsw .di.on{background:var(--in)}#dsw .di .ed-art{width:44px;height:44px}#dsw .dn{display:block;min-width:0;line-height:1.3;font-weight:600;font-size:15px}#dsw .dn small{display:block;font-weight:400;font-size:12px;color:var(--mu)}@media (min-width:700px){#dsw{align-items:center}#dsw .dp{border-radius:18px}}';document.head.appendChild(c)})();

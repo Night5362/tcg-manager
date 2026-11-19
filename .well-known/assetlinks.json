@@ -1,8 +1,10 @@
 [{
-      "relation": ["delegate_permission/common.handle_all_urls"],
-      "target": {
-        "namespace": "android_app",
-        "package_name": "io.github.night5362.twa",
-        "sha256_cert_fingerprints": ["40:FD:CB:00:D8:C9:69:73:C0:12:DC:C4:27:79:0B:E3:0A:20:47:35:9C:EE:6C:9B:1B:8F:8C:9F:CF:9D:98:C1"]
-      }
-    }]
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target": {
+    "namespace": "android_app",
+    "package_name": "com.riftgrimoire.manager",
+    "sha256_cert_fingerprints": [
+      "2F:21:46:5E:BA:AC:5E:4A:4C:D1:D9:69:F2:70:81:DE:7A:ED:B3:59:E2:21:65:92:2D:DF:A9:54:5A:36:16:F8"
+    ]
+  }
+}]

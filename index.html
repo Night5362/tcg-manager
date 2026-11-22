@@ -160,6 +160,31 @@ html.thx,html.thx *{transition:background-color .5s,color .5s,border-color .5s,b
 .card.rec-L{background:linear-gradient(90deg,color-mix(in srgb,var(--l) 14%,transparent),transparent 55%),linear-gradient(90deg,transparent,var(--ac) 50%,transparent) top/100% 1px no-repeat,linear-gradient(180deg,var(--cardhi),var(--card) 70%)}
 .card.rec .badge{min-width:40px;font-size:15px;padding:4px 9px;box-shadow:0 2px 8px color-mix(in srgb,currentColor 0%,rgba(0,0,0,.3))}
 @media (prefers-reduced-motion:reduce){.ring .rv,.trend .ln,.rk .bar i,.form10 i{animation:none}}
+/* ===== 各牌組統計升級 ===== */
+#dk-tabs{gap:8px!important;padding:2px 2px 6px!important;scroll-snap-type:x proximity}
+#dk-tabs .dkt{flex:0 0 auto;scroll-snap-align:start;display:flex;align-items:center;gap:8px;white-space:nowrap;padding:5px 14px 5px 5px;border:1px solid var(--bd);border-radius:999px;background:linear-gradient(180deg,var(--cardhi,var(--card)),var(--card));color:var(--tx);font:inherit;cursor:pointer;transition:transform .15s,border-color .2s,box-shadow .2s}
+#dk-tabs .dkt:active{transform:scale(.97)}
+#dk-tabs .dkt .dkav{width:28px;height:28px;border-width:1px;box-shadow:none;font-size:10px}
+#dk-tabs .dkt .nn{font-size:14px}
+#dk-tabs .dkt .ct{font-size:11px;opacity:.7;margin-left:2px}
+#dk-tabs .dkt.on{background:var(--gb);color:var(--gt,#1a1405);border-color:var(--ac);font-weight:700;box-shadow:0 3px 14px color-mix(in srgb,var(--ac) 40%,transparent)}
+.dkh{display:flex;align-items:center;gap:12px;margin:6px 2px 10px}
+.dkh .dkav{width:54px;height:54px;border-width:2px;box-shadow:0 3px 14px rgba(0,0,0,.45),0 0 18px color-mix(in srgb,var(--ac) 30%,transparent);font-size:16px}
+.dkh .t1{font-size:18px;font-weight:800;line-height:1.2}
+.dkh .t2{font-size:12px;color:var(--mu);margin-top:2px}
+.tt2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tt2 .tile{position:relative;padding:12px 10px 10px;border:1px solid var(--bd);border-radius:12px;text-align:center;background:linear-gradient(180deg,var(--cardhi,var(--card)),var(--card));overflow:hidden}
+.tt2 .tile.best{border-color:var(--ac);box-shadow:0 0 16px color-mix(in srgb,var(--ac) 22%,transparent)}
+.tt2 .tile .k{font-size:12px;color:var(--mu)}
+.tt2 .tile .v{font-size:30px;font-weight:800;margin:2px 0;letter-spacing:-.5px;background:var(--gb);-webkit-background-clip:text;background-clip:text;color:transparent}
+.tt2 .tile .s{font-size:12px;color:var(--mu)}
+.tt2 .tile .bar{margin-top:8px}
+.tt2 .tile .tag{position:absolute;top:8px;right:8px;font-size:10px;padding:1px 6px;border-radius:99px;background:var(--ac);color:var(--acx,#111);font-weight:700}
+.mu3{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:2px 0 4px}
+.mu3 div{border:1px solid var(--bd);border-radius:10px;padding:8px 10px;font-size:12px;color:var(--mu);display:flex;align-items:center;gap:8px;min-width:0}
+.mu3 .dkav{width:28px;height:28px;border-width:1px;box-shadow:none;font-size:10px}
+.mu3 b{display:block;font-size:13px;color:var(--tx);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mu3 .g{color:var(--w)}.mu3 .r{color:var(--l)}
 </style>
 </head>
 <body>
@@ -715,6 +740,7 @@ function hero(L){var o={w:0,l:0,d:0};L.forEach(function(r){o[r.res.toLowerCase()
  return '<div class="card"><div class="hero"><div class="ring"><svg viewBox="0 0 120 120"><defs><linearGradient id="rg1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="var(--ac)"/><stop offset="1" stop-color="var(--ac2,#0AC8B9)"/></linearGradient></defs><circle class="rt" cx="60" cy="60" r="52"/><circle class="rv" cx="60" cy="60" r="52" style="--c:'+C.toFixed(1)+';--o:'+off.toFixed(1)+'"/></svg><div class="rc"><b class="cnt" data-v="'+rt+'">'+rt+'%</b><span>勝率</span></div></div>'+
  '<div><div class="hchips"><div style="--c1:var(--w)"><b>'+o.w+'</b><span>勝</span></div><div style="--c1:var(--l)"><b>'+o.l+'</b><span>敗</span></div><div style="--c1:var(--d)"><b>'+o.d+'</b><span>和</span></div></div><div class="hmeta"><span>共 <b>'+L.length+'</b> 場</span><span>連勝 <b>'+st.cur+'</b>・最高 <b>'+st.best+'</b></span></div></div></div>'+
  '<div class="sec"><span>近 '+l10.length+' 場</span><span>舊 → 新</span></div><div class="form10">'+f+'</div>'+tr+'</div>'}
+window.dkHero=hero;
 function rank(L){var m=agg(L,dkn),ks=Object.keys(m).sort(function(a,b){return(m[b].w+m[b].l+m[b].d)-(m[a].w+m[a].l+m[a].d)}).slice(0,6);if(!ks.length)return '';
  return '<div class="card"><b>牌組勝率排行</b>'+ks.map(function(k){var o=m[k],n=o.w+o.l+o.d,r=rate(o),c=r>=55?'var(--w)':r<45?'var(--l)':'var(--ac)';
   return '<div class="rk">'+dkAv(k)+'<div class="rn"><div class="rt1"><span>'+dnH(k)+'</span><b style="color:'+c+'">'+r+'%</b></div><div class="mu2">'+n+' 場・'+o.w+' 勝 '+o.l+' 敗'+(o.d?' '+o.d+' 和':'')+'</div><div class="bar"><i style="width:'+r+'%;background:'+c+'"></i></div></div></div>'}).join('')+'</div>'}
@@ -722,6 +748,26 @@ var _v=vStats;vStats=function(){var h=_v(),L=curList();if(!L.length)return h;var
  if(re.test(h))h=h.replace(re,function(){return hero(L)+rank(L)});return h};
 var _c=cardH;cardH=function(r){var h=_c(r);return h.replace('<div style="margin-top:6px">'+esc(r.me),'<div class="vsr" style="margin-top:8px">'+dkAv(r.me)+'<div>'+esc(r.me)).replace(/(<span class="mu">vs<\/span>[\s\S]*?)(<\/div>(?:<div class="mu"|<div style="text-align:right">))/,'$1</div>$2')};
 var _r=render;render=function(){_r.apply(this,arguments);try{[].forEach.call(document.querySelectorAll('.cnt'),function(e){var v=+e.dataset.v,t0=performance.now();(function f(t){var k=Math.min(1,(t-t0)/900),x=1-Math.pow(1-k,3);e.textContent=(Math.round(v*x*10)/10)+'%';if(k<1)requestAnimationFrame(f);else e.textContent=v+'%'})(t0)})}catch(e){}};
+})();
+
+/* ===== 各牌組統計升級 ===== */
+(function(){
+function sideTiles(Q){var m=agg(Q,function(p){return p.t}),a=m['先']||{w:0,l:0,d:0},b=m['後']||{w:0,l:0,d:0};if(!(a.w+a.l+a.d+b.w+b.l+b.d))return '';
+ var ra=rate(a),rb=rate(b),na=a.w+a.l,nb=b.w+b.l,ba=na&&nb&&ra>rb,bb=na&&nb&&rb>ra;
+ function t(k,o,r,best){var n=o.w+o.l;return '<div class="tile'+(best?' best':'')+'">'+(best?'<span class="tag">較強</span>':'')+'<div class="k">'+k+'</div><div class="v">'+(n?r+'%':'—')+'</div><div class="s">'+o.w+' 勝 '+o.l+' 敗'+(o.d?' '+o.d+' 和':'')+'</div><div class="bar"><i style="width:'+r+'%"></i></div></div>'}
+ return '<div class="card"><b>先後攻勝率</b><div class="tt2" style="margin-top:10px">'+t('先攻',a,ra,ba)+t('後攻',b,rb,bb)+'</div></div>'}
+function matchups(D){var m=agg(D,okn),ks=Object.keys(m).sort(function(a,b){return(m[b].w+m[b].l+m[b].d)-(m[a].w+m[a].l+m[a].d)});if(!ks.length)return '';
+ var el=ks.filter(function(k){return m[k].w+m[k].l>=2}),best=el.slice().sort(function(a,b){return rate(m[b])-rate(m[a])})[0],worst=el.slice().sort(function(a,b){return rate(m[a])-rate(m[b])})[0],tips='';
+ if(best&&worst&&best!==worst)tips='<div class="mu3"><div>'+dkAv(best)+'<span style="min-width:0"><span>最優勢</span><b>'+dnH(best)+'</b><span class="g">'+rate(m[best])+'%</span></span></div><div>'+dkAv(worst)+'<span style="min-width:0"><span>最劣勢</span><b>'+dnH(worst)+'</b><span class="r">'+rate(m[worst])+'%</span></span></div></div>';
+ return '<div class="card"><b>此牌組對上各牌組</b>'+tips+ks.map(function(k){var o=m[k],n=o.w+o.l+o.d,r=rate(o),c=r>=55?'var(--w)':r<45?'var(--l)':'var(--ac)';
+  return '<div class="rk">'+dkAv(k)+'<div class="rn"><div class="rt1"><span>'+dnH(k)+'</span><b style="color:'+c+'">'+r+'%</b></div><div class="mu2">'+n+' 場・'+o.w+' 勝 '+o.l+' 敗'+(o.d?' '+o.d+' 和':'')+'</div><div class="bar"><i style="width:'+r+'%;background:'+c+'"></i></div></div></div>'}).join('')+'</div>'}
+var _e=extras;extras=function(L){var h=_e(L),i=h.indexOf('<div id="dk-tabs"');if(i<0||typeof mdeck==='undefined')return h;
+ var dm={};L.forEach(function(r){(dm[dkn(r)]=dm[dkn(r)]||[]).push(r)});var dk=Object.keys(dm).sort(function(x,y){return dm[y].length-dm[x].length});if(!dm[mdeck])return h;
+ var D=dm[mdeck],Q=[],o={w:0,l:0,d:0};D.forEach(function(r){o[r.res.toLowerCase()]++;if(r.games&&r.gt)r.games.forEach(function(x,k){if(r.gt[k])Q.push({res:x,t:r.gt[k]})});else if(r.fmt==='BO1'&&r.turn)Q.push({res:r.res,t:r.turn})});
+ var tabs='<div id="dk-tabs" style="display:flex;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;margin-bottom:10px">'+dk.map(function(k,x){var on=k===mdeck;return '<button class="dkt'+(on?' on':'')+'" onclick="selDeck('+x+')">'+dkAv(k)+'<span class="nn">'+dnH(k,on?'inherit':'var(--mu)')+'</span><span class="ct">'+dm[k].length+'</span></button>'}).join('')+'</div>';
+ var hd='<div class="dkh">'+dkAv(mdeck)+'<div><div class="t1">'+dnH(mdeck)+'</div><div class="t2">'+D.length+' 場・勝率 '+rate(o)+'%</div></div></div>';
+ var pre=h.slice(0,h.indexOf('<h1 style="margin-top:18px">各牌組統計</h1>')+'<h1 style="margin-top:18px">各牌組統計</h1>'.length);
+ return pre+tabs+'<div style="margin-bottom:14px">'+hd+dvLine(D[0].me)+dkHero(D)+sideTiles(Q)+matchups(D)+verTbl(D,mdeck)+'</div>'};
 })();
 
 </script>

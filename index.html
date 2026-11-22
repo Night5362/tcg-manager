@@ -699,7 +699,7 @@ if(migRB())render();
 /* ===== 介面升級：統計與列表 ===== */
 (function(){
 function hue(s){var h=0;for(var i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))%360;return h}
-window.dkAv=function(name){name=String(name||'');var p=name.split(' '),s=p[p.length-1]||name;
+window.dkAv=function(name){name=String(name||'').replace(/（[^）]*）\s*$/,'');var p=name.split(' '),s=p[p.length-1]||name;
  return '<img class="dkav" src="legends/'+encodeURIComponent(s)+'.webp" alt="" loading="lazy" data-n="'+esc(name)+'" data-s="'+esc(s)+'" onerror="dkErr(this)">'};
 window.dkErr=function(e){if(!e.dataset.t){e.dataset.t=1;e.src='https://riftgrimoire.com/legends/'+encodeURIComponent(e.dataset.s)+'.webp'}else e.outerHTML=dkMono(e.dataset.n)};
 window.dkMono=function(name){name=String(name||'');var p=name.split(' '),s=p[p.length-1]||name,h=hue(name);

@@ -185,6 +185,52 @@ html.thx,html.thx *{transition:background-color .5s,color .5s,border-color .5s,b
 .mu3 .dkav{width:28px;height:28px;border-width:1px;box-shadow:none;font-size:10px}
 .mu3 b{display:block;font-size:13px;color:var(--tx);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .mu3 .g{color:var(--w)}.mu3 .r{color:var(--l)}
+/* ===== 設計 A：海克斯客戶端風 ===== */
+:root{--serif:"Noto Serif TC","Noto Serif CJK TC","Noto Serif CJK HK","Source Han Serif TC","PMingLiU",serif;--ch:12px}
+body{background-image:radial-gradient(ellipse 120% 40% at 50% 0,var(--pg2),transparent 70%)}
+h1{font-family:var(--serif);font-weight:900;font-size:24px;letter-spacing:.12em;color:var(--tx);position:relative;padding-bottom:10px;margin-bottom:16px}
+h1::after{content:"";position:absolute;left:0;bottom:0;width:54px;height:2px;background:linear-gradient(90deg,var(--ac),transparent)}
+.card{border-radius:0;border-color:var(--bd);clip-path:polygon(var(--ch) 0,100% 0,100% calc(100% - var(--ch)),calc(100% - var(--ch)) 100%,0 100%,0 var(--ch));box-shadow:none;background:linear-gradient(90deg,transparent,var(--ac) 50%,transparent) top/100% 1px no-repeat,linear-gradient(160deg,var(--cardhi),var(--card) 70%)}
+.card.rec{clip-path:none;border-radius:0;border-left-width:4px}
+.card.rec.rec-W{background:linear-gradient(90deg,color-mix(in srgb,var(--w) 12%,transparent),transparent 45%),var(--card)}
+.card.rec.rec-L{background:linear-gradient(90deg,color-mix(in srgb,var(--l) 12%,transparent),transparent 45%),var(--card)}
+input,select,textarea{border-radius:0}
+.seg{border-radius:0}
+.seg button{font-family:var(--serif);font-weight:700;letter-spacing:.08em}
+.seg button.on{box-shadow:inset 0 0 12px rgba(255,255,255,.18)}
+.btn{border-radius:0;font-family:var(--serif);font-weight:900;letter-spacing:.24em;border:0;clip-path:polygon(6px 0,100% 0,calc(100% - 6px) 100%,0 100%);padding:14px;box-shadow:none}
+.btn.sec{clip-path:none;border:1px solid var(--bd);letter-spacing:.06em;font-family:inherit;font-weight:500}
+.badge{border-radius:0;transform:skewX(-6deg)}
+nav{background:color-mix(in srgb,var(--bg) 92%,#000);border-top:1px solid var(--bd);box-shadow:0 -6px 20px rgba(0,0,0,.25)}
+nav button.on{color:var(--tx)}
+nav button.on::before{height:3px;box-shadow:0 0 10px var(--ac);border-radius:0}
+.sec{letter-spacing:.18em;color:var(--ac);font-size:11px}
+.hchips div{border-radius:0;transform:skewX(-4deg)}.hchips div>*{transform:skewX(4deg)}
+.hchips b,.ring .rc b,.big b{font-family:var(--serif);font-weight:900}
+.ring .rt{stroke-width:7}.ring .rv{stroke-width:7}
+.form10 i{border-radius:0;transform:skewX(-6deg);height:30px}
+.bar{border-radius:0;height:5px}.bar i{border-radius:0}
+.big{gap:6px}
+
+.dia{--ds:34px;display:inline-flex;flex:none;width:var(--ds);height:var(--ds);margin:calc(var(--ds)*.2) calc(var(--ds)*.2);transform:rotate(45deg);border:1.5px solid var(--ac);overflow:hidden;background:var(--card);box-shadow:0 0 8px color-mix(in srgb,var(--ac) 35%,transparent);align-items:center;justify-content:center;position:relative}
+.dia .dkav{position:absolute;left:50%;top:50%;width:145%!important;height:145%!important;margin:0;border:0!important;border-radius:0;box-shadow:none;clip-path:none;transform:translate(-50%,-50%) rotate(-45deg);object-fit:cover}
+.dia .dkm{font-size:calc(var(--ds)*.38)!important}
+.vsr .dia{--ds:26px}#dk-tabs .dkt .dia{--ds:22px}.dkh .dia{--ds:42px}.mu3 .dia{--ds:22px}.rk .dia{--ds:30px}
+.ring .rt2{stroke-width:5;opacity:.45}.ring .rv2{fill:none;stroke:var(--ac2,#0AC8B9);stroke-width:5;stroke-linecap:round;stroke-dasharray:var(--c);stroke-dashoffset:var(--o);animation:rgA 1.2s cubic-bezier(.3,.8,.2,1) both}
+.ring .rc b{font-size:20px!important;letter-spacing:0}.ring .rc span{font-size:10px}
+.ring .rv{stroke:var(--ac)!important}.ring .rt{stroke:color-mix(in srgb,var(--ac) 22%,transparent)!important;opacity:1}.ring .rv2{stroke:#0AC8B9!important}.ring .rt2{stroke:color-mix(in srgb,#0AC8B9 22%,transparent)!important;opacity:1}
+:root[data-theme="light"] .ring .rv2{stroke:#0A9C91!important}
+.dia .ed-art{position:absolute;left:50%;top:50%;width:145%!important;height:145%!important;margin:0;border:0!important;border-radius:0!important;transform:translate(-50%,-50%) rotate(-45deg);object-fit:cover;object-position:50% 20%}
+.dia .ed-chip{font-size:calc(var(--ds)*.55)!important}
+.ed-rr .dia,.ed-h .dia{margin-left:calc(var(--ds)*.2)}
+.ed{border-radius:0!important;clip-path:polygon(12px 0,100% 0,100% calc(100% - 12px),calc(100% - 12px) 100%,0 100%,0 12px)}
+.ed-rr{border-radius:0!important;border-left:3px solid var(--bd)}
+.ed-pill,.ed-res{border-radius:0!important;transform:skewX(-6deg)}
+.ed-dice,.ed-dice i{border-radius:0!important}
+.ed-pill{font-family:var(--serif);font-weight:900}
+.ed-r,.ed-r>*,.ed-b{border-radius:0!important}
+.btn{clip-path:none!important}.ed-pill{transform:none!important}
+#dk-tabs,#dk-tabs button,#dk-tabs .dkt{border-radius:0!important}
 </style>
 </head>
 <body>
@@ -617,10 +663,10 @@ function lgUrl(n,i,v){return 'legends/'+encodeURIComponent(lgShort(n))+(+v>1?'-'
 function lgSet(n){return ''}
 function lgLoad(){}
 function lgShort(n){var p=String(n||'').trim().split(/\s+/),w=p[p.length-1]||'';return w.split(/[‧·・•．.]/)[0]||w}
-function lgChipH(n,sz){return '<div class="ed-art ed-chip" style="width:'+sz+'px;height:'+sz+'px;font-size:'+Math.round(sz/2.4)+'px">'+esc(lgShort(n).slice(0,1)||'?')+'</div>'}
-function lgFail(im){var i=+im.getAttribute('data-i')+1;if(i<LGX.length){im.setAttribute('data-i',i);im.src=lgUrl(im.getAttribute('data-n'),i,im.getAttribute('data-v'));return}if(!(+im.getAttribute('data-v')>1))LGMISS[im.getAttribute('data-n')]=1;var d=document.createElement('div');d.innerHTML=lgChipH(im.getAttribute('data-n'),im.width||54);im.replaceWith(d.firstChild)}
+function lgChipH(n,sz){return '<span class="dia" style="--ds:'+Math.round(sz*.7)+'px"><div class="ed-art ed-chip" style="width:'+sz+'px;height:'+sz+'px;font-size:'+Math.round(sz/2.4)+'px">'+esc(lgShort(n).slice(0,1)||'?')+'</div></span>'}
+function lgFail(im){var i=+im.getAttribute('data-i')+1;if(i<LGX.length){im.setAttribute('data-i',i);im.src=lgUrl(im.getAttribute('data-n'),i,im.getAttribute('data-v'));return}if(!(+im.getAttribute('data-v')>1))LGMISS[im.getAttribute('data-n')]=1;var d=document.createElement('div');d.innerHTML=lgChipH(im.getAttribute('data-n'),+im.getAttribute('data-sz')||54);var t=im.parentNode&&im.parentNode.classList&&im.parentNode.classList.contains('dia')?im.parentNode:im;t.replaceWith(d.firstChild)}
 var LGMISS={};
-function lgImgH(n,sz,gm,v){return gm==='符文戰場'&&lgShort(n)&&n!=='未知牌組'&&!(LGMISS[n]&&!(+v>1))?'<img class="ed-art" style="width:'+sz+'px;height:'+sz+'px" src="'+esc(lgUrl(n,0,v))+'" data-n="'+esc(n)+'" data-v="'+(+v||1)+'" data-i="0" loading="lazy" onerror="lgFail(this)">':lgChipH(n,sz)}
+function lgImgH(n,sz,gm,v){return gm==='符文戰場'&&lgShort(n)&&n!=='未知牌組'&&!(LGMISS[n]&&!(+v>1))?'<span class="dia" style="--ds:'+Math.round(sz*.7)+'px"><img class="ed-art" data-sz="'+sz+'" style="width:'+sz+'px;height:'+sz+'px" src="'+esc(lgUrl(n,0,v))+'" data-n="'+esc(n)+'" data-v="'+(+v||1)+'" data-i="0" loading="lazy" onerror="lgFail(this)"></span>':lgChipH(n,sz)}
 var DICE='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="3.5" y="3.5" width="17" height="17" rx="4"/><circle cx="8.5" cy="8.5" r="1.1" fill="currentColor"/><circle cx="15.5" cy="8.5" r="1.1" fill="currentColor"/><circle cx="12" cy="12" r="1.1" fill="currentColor"/><circle cx="8.5" cy="15.5" r="1.1" fill="currentColor"/><circle cx="15.5" cy="15.5" r="1.1" fill="currentColor"/></svg>';
 var NOTE='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg>';
 function evdCur(){return evList().filter(function(e){return e.k===evK})[0]}
@@ -725,19 +771,19 @@ if(migRB())render();
 (function(){
 function hue(s){var h=0;for(var i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))%360;return h}
 window.dkAv=function(name){name=String(name||'').replace(/（[^）]*）\s*$/,'');var p=name.split(' '),s=p[p.length-1]||name;
- return '<img class="dkav" src="legends/'+encodeURIComponent(s)+'.webp" alt="" loading="lazy" data-n="'+esc(name)+'" data-s="'+esc(s)+'" onerror="dkErr(this)">'};
+ return '<span class="dia"><img class="dkav" src="legends/'+encodeURIComponent(s)+'.webp" alt="" loading="lazy" data-n="'+esc(name)+'" data-s="'+esc(s)+'" onerror="dkErr(this)"></span>'};
 window.dkErr=function(e){if(!e.dataset.t){e.dataset.t=1;e.src='https://riftgrimoire.com/legends/'+encodeURIComponent(e.dataset.s)+'.webp'}else e.outerHTML=dkMono(e.dataset.n)};
 window.dkMono=function(name){name=String(name||'');var p=name.split(' '),s=p[p.length-1]||name,h=hue(name);
  return '<span class="dkav dkm" style="background:linear-gradient(135deg,hsl('+h+',42%,40%),hsl('+((h+45)%360)+',48%,22%))">'+esc(s.slice(0,2))+'</span>'};
 function srt(L){return L.slice().sort(function(a,b){return a.date.localeCompare(b.date)||a.id-b.id})}
 function hero(L){var o={w:0,l:0,d:0};L.forEach(function(r){o[r.res.toLowerCase()]++});var rt=rate(o),st=streak(L),C=2*Math.PI*52,off=C*(1-rt/100);
- var s=srt(L),l10=s.slice(-10);
+ var s=srt(L),l10=s.slice(-10);var fw=0,ft=0;L.forEach(function(r){if(r.turn==='先'||r.turn==='先攻'){ft++;if(r.res==='W')fw++}});var fr0=ft?fw/ft*100:0;
  var f=l10.map(function(r,i){return '<i class="'+r.res+'" style="animation-delay:'+(i*45)+'ms">'+RL[r.res]+'</i>'}).join('');
  var pts=[],w=0,n=0;s.slice(-30).forEach(function(r){if(r.res==='D')return;n++;if(r.res==='W')w++;pts.push(w/n*100)});
  var tr='';if(pts.length>=2){var W=300,H=60,pad=4,xs=function(i){return pad+i*(W-2*pad)/(pts.length-1)},ys=function(v){return H-pad-(v/100)*(H-2*pad)};
   var d=pts.map(function(v,i){return (i?'L':'M')+xs(i).toFixed(1)+','+ys(v).toFixed(1)}).join(' '),len=Math.ceil(pts.length*W/pts.length*1.6);
   tr='<div class="sec"><span>勝率走勢（最近 '+pts.length+' 場）</span><span>'+Math.round(pts[pts.length-1])+'%</span></div><svg class="trend" viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none" style="--tl:'+len+'"><defs><linearGradient id="tg1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--ac)" stop-opacity=".35"/><stop offset="1" stop-color="var(--ac)" stop-opacity="0"/></linearGradient></defs><line class="mid" x1="0" x2="'+W+'" y1="'+ys(50)+'" y2="'+ys(50)+'"/><path class="ar" d="'+d+' L'+xs(pts.length-1)+','+H+' L'+xs(0)+','+H+'Z"/><path class="ln" d="'+d+'"/></svg>'}
- return '<div class="card"><div class="hero"><div class="ring"><svg viewBox="0 0 120 120"><defs><linearGradient id="rg1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="var(--ac)"/><stop offset="1" stop-color="var(--ac2,#0AC8B9)"/></linearGradient></defs><circle class="rt" cx="60" cy="60" r="52"/><circle class="rv" cx="60" cy="60" r="52" style="--c:'+C.toFixed(1)+';--o:'+off.toFixed(1)+'"/></svg><div class="rc"><b class="cnt" data-v="'+rt+'">'+rt+'%</b><span>勝率</span></div></div>'+
+ return '<div class="card"><div class="hero"><div class="ring"><svg viewBox="0 0 120 120"><defs><linearGradient id="rg1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="var(--ac)"/><stop offset="1" stop-color="var(--ac2,#0AC8B9)"/></linearGradient></defs><circle class="rt" cx="60" cy="60" r="52"/><circle class="rv" cx="60" cy="60" r="52" style="--c:'+C.toFixed(1)+';--o:'+off.toFixed(1)+'"/><circle class="rt rt2" cx="60" cy="60" r="40"/><circle class="rv rv2" cx="60" cy="60" r="40" style="--c:'+(2*Math.PI*40).toFixed(1)+';--o:'+(2*Math.PI*40*(1-fr0/100)).toFixed(1)+'"/></svg><div class="rc"><b class="cnt" data-v="'+rt+'">'+rt+'%</b><span>勝率</span></div></div>'+
  '<div><div class="hchips"><div style="--c1:var(--w)"><b>'+o.w+'</b><span>勝</span></div><div style="--c1:var(--l)"><b>'+o.l+'</b><span>敗</span></div><div style="--c1:var(--d)"><b>'+o.d+'</b><span>和</span></div></div><div class="hmeta"><span>共 <b>'+L.length+'</b> 場</span><span>連勝 <b>'+st.cur+'</b>・最高 <b>'+st.best+'</b></span></div></div></div>'+
  '<div class="sec"><span>近 '+l10.length+' 場</span><span>舊 → 新</span></div><div class="form10">'+f+'</div>'+tr+'</div>'}
 window.dkHero=hero;

@@ -231,6 +231,12 @@ nav button.on::before{height:3px;box-shadow:0 0 10px var(--ac);border-radius:0}
 .ed-r,.ed-r>*,.ed-b{border-radius:0!important}
 .btn{clip-path:none!important}.ed-pill{transform:none!important}
 #dk-tabs,#dk-tabs button,#dk-tabs .dkt{border-radius:0!important}
+
+.dia{margin:0!important;transform:none!important;border:0!important;background:var(--ac)!important;clip-path:polygon(22% 0,100% 0,100% 78%,78% 100%,0 100%,0 22%);box-shadow:none!important;overflow:hidden}
+.dia .dkav,.dia .ed-art{left:2px!important;top:2px!important;width:calc(100% - 4px)!important;height:calc(100% - 4px)!important;transform:none!important;clip-path:polygon(22% 0,100% 0,100% 78%,78% 100%,0 100%,0 22%);object-fit:cover;object-position:50% 15%}
+.dia .dkm{display:flex;align-items:center;justify-content:center}
+.vsr .dia{--ds:30px}#dk-tabs .dkt .dia{--ds:26px}.dkh .dia{--ds:46px}.mu3 .dia{--ds:26px}.rk .dia{--ds:34px}
+.ed-rr .dia,.ed-h .dia{margin:0!important}
 </style>
 </head>
 <body>
@@ -663,10 +669,10 @@ function lgUrl(n,i,v){return 'legends/'+encodeURIComponent(lgShort(n))+(+v>1?'-'
 function lgSet(n){return ''}
 function lgLoad(){}
 function lgShort(n){var p=String(n||'').trim().split(/\s+/),w=p[p.length-1]||'';return w.split(/[‧·・•．.]/)[0]||w}
-function lgChipH(n,sz){return '<span class="dia" style="--ds:'+Math.round(sz*.7)+'px"><div class="ed-art ed-chip" style="width:'+sz+'px;height:'+sz+'px;font-size:'+Math.round(sz/2.4)+'px">'+esc(lgShort(n).slice(0,1)||'?')+'</div></span>'}
+function lgChipH(n,sz){return '<span class="dia" style="--ds:'+Math.round(sz*.9)+'px"><div class="ed-art ed-chip" style="width:'+sz+'px;height:'+sz+'px;font-size:'+Math.round(sz/2.4)+'px">'+esc(lgShort(n).slice(0,1)||'?')+'</div></span>'}
 function lgFail(im){var i=+im.getAttribute('data-i')+1;if(i<LGX.length){im.setAttribute('data-i',i);im.src=lgUrl(im.getAttribute('data-n'),i,im.getAttribute('data-v'));return}if(!(+im.getAttribute('data-v')>1))LGMISS[im.getAttribute('data-n')]=1;var d=document.createElement('div');d.innerHTML=lgChipH(im.getAttribute('data-n'),+im.getAttribute('data-sz')||54);var t=im.parentNode&&im.parentNode.classList&&im.parentNode.classList.contains('dia')?im.parentNode:im;t.replaceWith(d.firstChild)}
 var LGMISS={};
-function lgImgH(n,sz,gm,v){return gm==='符文戰場'&&lgShort(n)&&n!=='未知牌組'&&!(LGMISS[n]&&!(+v>1))?'<span class="dia" style="--ds:'+Math.round(sz*.7)+'px"><img class="ed-art" data-sz="'+sz+'" style="width:'+sz+'px;height:'+sz+'px" src="'+esc(lgUrl(n,0,v))+'" data-n="'+esc(n)+'" data-v="'+(+v||1)+'" data-i="0" loading="lazy" onerror="lgFail(this)"></span>':lgChipH(n,sz)}
+function lgImgH(n,sz,gm,v){return gm==='符文戰場'&&lgShort(n)&&n!=='未知牌組'&&!(LGMISS[n]&&!(+v>1))?'<span class="dia" style="--ds:'+Math.round(sz*.9)+'px"><img class="ed-art" data-sz="'+sz+'" style="width:'+sz+'px;height:'+sz+'px" src="'+esc(lgUrl(n,0,v))+'" data-n="'+esc(n)+'" data-v="'+(+v||1)+'" data-i="0" loading="lazy" onerror="lgFail(this)"></span>':lgChipH(n,sz)}
 var DICE='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="3.5" y="3.5" width="17" height="17" rx="4"/><circle cx="8.5" cy="8.5" r="1.1" fill="currentColor"/><circle cx="15.5" cy="8.5" r="1.1" fill="currentColor"/><circle cx="12" cy="12" r="1.1" fill="currentColor"/><circle cx="8.5" cy="15.5" r="1.1" fill="currentColor"/><circle cx="15.5" cy="15.5" r="1.1" fill="currentColor"/></svg>';
 var NOTE='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg>';
 function evdCur(){return evList().filter(function(e){return e.k===evK})[0]}
